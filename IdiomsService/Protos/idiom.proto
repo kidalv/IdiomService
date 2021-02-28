@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "Protos/models.proto";
+
+option csharp_namespace = "IdiomsService.Protos";
+
+package idiom;
+
+service Idiom {
+  rpc GetIdiomList (GetIdiomListRequest) returns (GetIdiomListReply);
+  rpc GetIdiomInfo (GetIdiomInfoRequest) returns (GetIdiomInfoReply);
+  rpc AddIdiom (AddIdiomRequest) returns (GetIdiomInfoReply);
+  rpc ChangeIdiom (ChangeIdiomRequest) returns (GetIdiomInfoReply);
+  rpc DeleteIdiom (DeleteIdiomRequest) returns (DeleteIdiomReply);
+}
+
+message GetIdiomListRequest {
+  int32 count = 1;
+  int32 skip = 2;
+}
+
+message GetIdiomInfoRequest {
+  int32 idiom_id = 1;
+}
+
+message AddIdiomRequest {
+  string text = 1;
+  string meaning = 2;
+  string usage = 3;
+  int32 language_id = 4;
+}
+
+message ChangeIdiomRequest {
+  int32 idiom_id = 1;
+  string text = 2;
+  string meaning = 3;
+  string usage = 4;
+  int32 language_id = 6;
+}
+
+message DeleteIdiomRequest {
+  int32 idiom_id = 1;
+}
+
+message DeleteIdiomReply {
+  string result = 1;
+}
+
+message GetIdiomInfoReply {
+  int32 idiom_id = 1;
+  string text = 2;
+  string meaning = 3;
+  string usage = 4;
+  google.protobuf.Timestamp date_added = 5;
+  LanguageReply language = 6;
+  UserReply user = 7;
+  int32 upvote_count = 9;
+  int32 favorites_count = 10;
+  bool is_favorite = 11;
+  repeated CommentReply comments = 12;
+  bool is_user_upvoted = 13;
+  bool is_upvote = 14;
+  google.protobuf.Timestamp date_modified = 15;
+}
+
+message GetIdiomListReply {
+  repeated IdiomReply idioms = 1;
+}
+
+message IdiomReply {
+  int32 idiom_id = 1;
+  string text = 2;
+  google.protobuf.Timestamp date_added = 5;
+  LanguageReply language = 6;
+  UserReply user = 7;
+  int32 upvote_count = 9;
+  int32 favorites_count = 10;
+  bool is_favorite = 11;
+}

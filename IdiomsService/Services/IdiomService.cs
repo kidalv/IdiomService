@@ -1,0 +1,73 @@
+﻿using Grpc.Core;
+using IdiomsService.Protos;
+using IdiomsService.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace IdiomsService.Services
+{
+    public class IdiomService : Idiom.IdiomBase
+    {
+        private readonly ILogger<IdiomService> _logger;
+        private readonly IIdiomRepository _idioms;
+        public IdiomService(ILogger<IdiomService> logger, IIdiomRepository idioms)
+        {
+            _logger = logger;
+            _idioms = idioms;
+        }
+
+        //[Authorize]
+        public override async Task<GetIdiomInfoReply> GetIdiomInfo(GetIdiomInfoRequest request, ServerCallContext context)
+        {
+            return await _idioms.GetIdiomInfo(request.IdiomId, 1/*int.Parse(context.GetHttpContext().User.Identity.Name)*/);
+        }
+
+        public override async Task<GetIdiomListReply> GetIdiomList(GetIdiomListRequest request, ServerCallContext context)
+        {
+            var result = new GetIdiomListReply();
+            result.Idioms.AddRange(await _idioms.GetIdiomList(request.Skip, request.Count));
+            return result;
+        }
+
+        [Authorize]
+        public override async Task<GetIdiomInfoReply> AddIdiom(AddIdiomRequest request, ServerCallContext context)
+        {
+            var idiom = new Database.Models.Idiom
+            {
+                Text = request.Text,
+                Meaning = request.Meaning,
+                Usage = request.Usage,
+                LanguageId = request.LanguageId,
+                UserId = int.Parse(context.GetHttpContext().User.Identity.Name)
+            };
+            var result = await _idioms.AddIdiom(idiom);
+            if (!result)
+            {
+                throw new RpcException(new Status(StatusCode.AlreadyExists, "Idiom with this text already exist"));
+            }
+            return await _idioms.GetIdiomInfo(idiom.IdiomId, int.Parse(context.GetHttpContext().User.Identity.Name));
+        }
+
+        public override async Task<GetIdiomInfoReply> ChangeIdiom(ChangeIdiomRequest request, ServerCallContext context)
+        {
+            if (!await _idioms.ChangeIdiom(request.IdiomId, request.Text, request.Meaning, request.Usage, request.LanguageId))
+            {
+                throw new RpcException(new Status(StatusCode.NotFound, "Idiom was not found"));
+            }
+            return await _idioms.GetIdiomInfo(request.IdiomId, int.Parse(context.GetHttpContext().User.Identity.Name));
+        }
+
+        public override async Task<DeleteIdiomReply> DeleteIdiom(DeleteIdiomRequest request, ServerCallContext context)
+        {
+            if (!await _idioms.DeleteIdiom(request.IdiomId))
+            {
+                throw new RpcException(new Status(StatusCode.NotFound, "Idiom was not found"));
+            }
+            return new DeleteIdiomReply { Result = "Idiom removed" };
+        }
+    }
+}
