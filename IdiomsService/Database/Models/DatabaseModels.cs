@@ -95,6 +95,7 @@ namespace IdiomsService.Database.Models
         [Required]
         public int IdiomId { get; set; }
         public Idiom Idiom { get; set; }
+        public ICollection<CommentLike> CommentLikes { get; set; }
     }
 
     public class Favorite

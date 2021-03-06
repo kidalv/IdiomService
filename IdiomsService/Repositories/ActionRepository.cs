@@ -126,16 +126,49 @@ namespace IdiomsService.Repositories
             return false;
         }
 
-        public async Task<CommentReply> GetCommentReply(int commentId)
+        public async Task<CommentReply> GetCommentReply(int commentId, int currentUserId)
         {
-            return await _db.Comments.Where(x => x.CommentId == commentId).Include(x => x.User).Select(x => x.ToReply()).FirstOrDefaultAsync();
+            return await _db.Comments.Where(x => x.CommentId == commentId).Include(x => x.User).Include(x => x.CommentLikes).Select(x => x.ToReply(currentUserId)).FirstOrDefaultAsync();
         }
 
-        public async Task<GetAllLanguagesResponse> GetAlllAnguages()
+        public async Task<GetAllLanguagesResponse> GetAllLAnguages()
         {
             var result = new GetAllLanguagesResponse();
             result.Languages.Add(await _db.Languages.Select(x => x.ToReply()).ToListAsync());
             return result;
+        }
+
+        public async Task<bool> AddOrChangeCommentLike(int commentId, int userId, bool isLike)
+        {
+            var commentLike = await _db.CommentLikes.FirstOrDefaultAsync(x => x.CommentId == commentId && x.UserId == userId);
+            if (commentLike != null)
+            {
+                commentLike.IsLike = isLike;
+                _db.CommentLikes.Update(commentLike);
+            }
+            else
+            {
+                _db.CommentLikes.Add(new CommentLike
+                {
+                    CommentId = commentId,
+                    UserId = userId,
+                    IsLike = isLike
+                });
+            }
+            await _db.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteCommentLike(int commentId, int userId)
+        {
+            var commentLike = await _db.CommentLikes.FirstOrDefaultAsync(x => x.CommentId == commentId && x.UserId == userId);
+            if (commentLike != null) 
+            {
+                _db.CommentLikes.Remove(commentLike);
+                await _db.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
     }
 }

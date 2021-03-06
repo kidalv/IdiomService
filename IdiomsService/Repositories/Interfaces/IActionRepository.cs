@@ -16,7 +16,9 @@ namespace IdiomsService.Repositories
         Task<bool> DeleteComment(int commentId);
         Task<bool> DeleteFavorite(int idiomId, int userId);
         Task<bool> DeleteUpvote(int idiomId, int userId);
-        Task<CommentReply> GetCommentReply(int commentId);
-        Task<GetAllLanguagesResponse> GetAlllAnguages();
+        Task<bool> AddOrChangeCommentLike(int commentId, int userId, bool isLike);
+        Task<bool> DeleteCommentLike(int commentId, int userId);
+        Task<CommentReply> GetCommentReply(int commentId, int currentUserId);
+        Task<GetAllLanguagesResponse> GetAllLAnguages();
     }
 }

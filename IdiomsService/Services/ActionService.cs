@@ -24,14 +24,15 @@ namespace IdiomsService.Services
 
         public override async Task<CommentReply> AddComment(AddCommentRequest request, ServerCallContext context)
         {
+            var userId = int.Parse(context.GetHttpContext().User.Identity.Name);
             var comment = new Comment
             {
                 IdiomId = request.IdiomId,
                 Text = request.Text,
-                UserId = int.Parse(context.GetHttpContext().User.Identity.Name)
+                UserId = userId
             };
             await _actions.AddComment(comment);
-            return await _actions.GetCommentReply(comment.CommentId);
+            return await _actions.GetCommentReply(comment.CommentId, userId);
         }
 
         public override async Task<FavoriteReply> AddFavorite(AddFavoriteRequest request, ServerCallContext context)
@@ -75,7 +76,7 @@ namespace IdiomsService.Services
             {
                 throw new RpcException(new Status(StatusCode.NotFound, "Comment not found"));
             }
-            return await _actions.GetCommentReply(request.CommentId);
+            return await _actions.GetCommentReply(request.CommentId, int.Parse(context.GetHttpContext().User.Identity.Name));
         }
 
         public override async Task<DeleteReply> DeleteComment(DeleteCommentRequest request, ServerCallContext context)
@@ -122,7 +123,29 @@ namespace IdiomsService.Services
 
         public override async Task<GetAllLanguagesResponse> GetAllLanguages(GetAllLanguagesRequest request, ServerCallContext context)
         {
-            return await _actions.GetAlllAnguages();
+            return await _actions.GetAllLAnguages();
+        }
+
+        public override async Task<AddCommentLikeResponse> AddCommentLike(AddCommentLikeRequest request, ServerCallContext context)
+        {
+            return new AddCommentLikeResponse
+            {
+                IsSuccessful = await _actions.AddOrChangeCommentLike(request.CommentId, int.Parse(context.GetHttpContext().User.Identity.Name), request.IsLike)
+            };
+
+        }
+
+        public override async Task<DeleteCommentLikeResponse> DeleteCommentLike(DeleteCommentLikeRequest request, ServerCallContext context)
+        {
+            var result = await _actions.DeleteCommentLike(request.CommentId, int.Parse(context.GetHttpContext().User.Identity.Name));
+            if(!result)
+            {
+                throw new RpcException(new Status(StatusCode.NotFound, "CommentLike not found"));
+            }
+            return new DeleteCommentLikeResponse
+            {
+                IsRemoved = true
+            };
         }
     }
 }

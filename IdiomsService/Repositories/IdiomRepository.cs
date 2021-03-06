@@ -41,7 +41,8 @@ namespace IdiomsService.Repositories
                           }).AsNoTracking().FirstOrDefaultAsync();
             result.Comments.AddRange(await _db.Comments.Where(x => x.IdiomId == idiomId)
                                                   .Include(x => x.User)
-                                                  .Select(x => x.ToReply())
+                                                  .Include(x => x.CommentLikes)
+                                                  .Select(x => x.ToReply(currentUserId))
                                                   .AsNoTracking()
                                                   .ToListAsync());
             return result;

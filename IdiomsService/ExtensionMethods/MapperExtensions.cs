@@ -29,12 +29,16 @@ namespace IdiomsService.ExtensionMethods
 
         public static FavoriteReply ToReply(this Favorite favorite) => new FavoriteReply { FavoriteId = favorite.FavoriteId, UserId = favorite.UserId, IdiomId = favorite.IdiomId };
 
-        public static CommentReply ToReply(this Comment comment) => new CommentReply
+        public static CommentReply ToReply(this Comment comment, int currentUserId) => new CommentReply
         {
             CommentId = comment.CommentId,
             Text = comment.Text,
             Date = Timestamp.FromDateTime(comment.DateAdded.ToUniversalTime()),
-            User = comment.User.ToReply()
+            User = comment.User.ToReply(),
+            LikesCount = comment.CommentLikes.Count(x => x.IsLike),
+            DislikesCount = comment.CommentLikes.Count(x => !x.IsLike),
+            IsUserLike = comment.CommentLikes.Where(x => x.UserId == currentUserId).Select(x => x.IsLike).FirstOrDefault(),
+            UserCommentLikeAdded = comment.CommentLikes.Any(x => x.UserId == currentUserId),
         };
     }
 }

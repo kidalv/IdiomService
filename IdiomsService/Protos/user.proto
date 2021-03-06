@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "Protos/models.proto";
+import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "IdiomsService.Protos";
 
@@ -62,4 +63,11 @@ message UserProfileReply {
   string email = 3;
   repeated LanguageReply user_languages = 4;
   string image_url = 5;
+  google.protobuf.Timestamp date_joined = 6;
+  int32 upvotes = 7;
+  int32 favorites = 8;
+  int32 comments = 9;
+  int32 idioms_count = 10;
+  int32 likes = 11;
+  int32 dislikes = 12;
 }
