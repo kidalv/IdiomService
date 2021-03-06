@@ -25,6 +25,7 @@ namespace IdiomsService.Repositories
             if (!await _db.UserLanguages.AnyAsync(x => x.LanguageId == languageId && x.UserId == userId))
             {
                 _db.UserLanguages.Add(new UserLanguage { LanguageId = languageId, UserId = userId });
+                await _db.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -37,6 +38,7 @@ namespace IdiomsService.Repositories
             {
                 _db.UserLanguages.Remove(userLanguage);
                 await _db.SaveChangesAsync();
+                return true;
             }
             return false;
         }

@@ -20,10 +20,10 @@ namespace IdiomsService.Services
             _idioms = idioms;
         }
 
-        //[Authorize]
+        [Authorize]
         public override async Task<GetIdiomInfoReply> GetIdiomInfo(GetIdiomInfoRequest request, ServerCallContext context)
         {
-            return await _idioms.GetIdiomInfo(request.IdiomId, 1/*int.Parse(context.GetHttpContext().User.Identity.Name)*/);
+            return await _idioms.GetIdiomInfo(request.IdiomId, int.Parse(context.GetHttpContext().User.Identity.Name));
         }
 
         public override async Task<GetIdiomListReply> GetIdiomList(GetIdiomListRequest request, ServerCallContext context)

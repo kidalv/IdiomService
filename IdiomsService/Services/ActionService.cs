@@ -28,8 +28,7 @@ namespace IdiomsService.Services
             {
                 IdiomId = request.IdiomId,
                 Text = request.Text,
-                //UserId = int.Parse(context.GetHttpContext().User.Identity.Name) TODO: VERNUTJ ETO
-                UserId = 1
+                UserId = int.Parse(context.GetHttpContext().User.Identity.Name)
             };
             await _actions.AddComment(comment);
             return await _actions.GetCommentReply(comment.CommentId);
@@ -40,8 +39,7 @@ namespace IdiomsService.Services
             var favorite = new Favorite
             {
                 IdiomId = request.IdiomId,
-                //UserId = int.Parse(context.GetHttpContext().User.Identity.Name), TODO AZAZAZA
-                UserId = 1,
+                UserId = int.Parse(context.GetHttpContext().User.Identity.Name),
             };
             await _actions.AddFavorite(favorite);
             return favorite.ToReply();
@@ -51,8 +49,7 @@ namespace IdiomsService.Services
         {
             var report = new Report
             {
-                //UserId = int.Parse(context.GetHttpContext().User.Identity.Name),
-                UserId = 1,
+                UserId = int.Parse(context.GetHttpContext().User.Identity.Name),
                 IdiomId = request.IdiomId,
                 Text = request.Text
             };
@@ -64,8 +61,7 @@ namespace IdiomsService.Services
         {
             var upvote = new Upvote
             {
-                //UserId = int.Parse(context.GetHttpContext().User.Identity.Name), TODO AZAQZAZ
-                UserId = 1,
+                UserId = int.Parse(context.GetHttpContext().User.Identity.Name),
                 IdiomId = request.IdiomId,
                 IsUpvote = request.IsUpvote
             };
@@ -93,8 +89,7 @@ namespace IdiomsService.Services
 
         public override async Task<DeleteReply> DeleteFavorite(DeleteFavoriteRequest request, ServerCallContext context)
         {
-            if (!await _actions.DeleteFavorite(request.IdiomId, 1))
-            //if (!await _actions.DeleteFavorite(request.IdiomId, int.Parse(context.GetHttpContext().User.Identity.Name)))
+            if (!await _actions.DeleteFavorite(request.IdiomId, int.Parse(context.GetHttpContext().User.Identity.Name)))
             {
                 throw new RpcException(new Status(StatusCode.NotFound, "Favorite not found"));
             }
