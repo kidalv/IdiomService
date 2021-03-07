@@ -52,7 +52,7 @@ namespace IdiomsService.Repositories
                     UserId = x.UserId,
                     Email = x.Email,
                     Name = x.Name,
-                    ImageUrl = x.ImageUrl,
+                    ImageUrl = x.ImageUrl ?? "",
                     DateJoined = Timestamp.FromDateTime(x.Registered.ToUniversalTime()),
                     Comments = _db.Comments.Count(x => x.UserId == userId)
                 }).AsNoTracking().FirstOrDefaultAsync();

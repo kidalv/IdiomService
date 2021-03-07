@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using IdiomsService.Protos;
 using IdiomsService.Repositories;
 using IdiomsService.Security;
+using Google.Apis.Auth;
 
 namespace IdiomsService.Services
 {
@@ -50,6 +51,11 @@ namespace IdiomsService.Services
                 throw new RpcException(new Status(StatusCode.AlreadyExists, "Email already used"));
             }
             return user;
+        }
+
+        public override async Task<UserCredentialsReply> GoogleSignIn(GoogleSignInRequest request, ServerCallContext context)
+        {
+            return await _authorization.GoogleSignIn(request.JwtToken);
         }
 
         public override Task<UserProfileReply> ChangeUser(ChangeUserRequest request, ServerCallContext context)

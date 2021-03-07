@@ -19,7 +19,7 @@ namespace IdiomsService.ExtensionMethods
             NativeName = language.NativeName,
         };
 
-        public static UserReply ToReply(this Database.Models.User user) => new UserReply { UserId = user.UserId, Name = user.Name };
+        public static UserReply ToReply(this Database.Models.User user) => new UserReply { UserId = user.UserId, Name = user.Name, ImageUrl = user.ImageUrl ?? "" };
 
         public static ReportReply ToReply(this Report report) => new ReportReply { ReportId = report.ReportId, UserId = report.UserId, IdiomId = report.IdiomId, Text = report.Text };
 

@@ -48,7 +48,7 @@ namespace IdiomsService.Repositories
             return result;
         }
 
-        public async Task<IEnumerable<IdiomReply>> GetIdiomList(int skip, int count)
+        public async Task<IEnumerable<IdiomReply>> GetIdiomList(int skip, int count, int currentUserId)
         {
             var check = await _db.Idioms.Select(i => new IdiomReply
             {
@@ -60,6 +60,7 @@ namespace IdiomsService.Repositories
                                             _db.Upvotes.Where(x => x.IdiomId == i.IdiomId && !x.IsUpvote).Count(),
                 Language = i.Language.ToReply(),
                 User = i.User.ToReply(),
+                IsFavorite = _db.Favorites.Any(x => x.IdiomId == i.IdiomId && x.UserId == currentUserId)
             }).Skip(skip).Take(count).AsNoTracking().ToListAsync();
             return check;
         }

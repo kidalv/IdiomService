@@ -29,7 +29,7 @@ namespace IdiomsService.Services
         public override async Task<GetIdiomListReply> GetIdiomList(GetIdiomListRequest request, ServerCallContext context)
         {
             var result = new GetIdiomListReply();
-            result.Idioms.AddRange(await _idioms.GetIdiomList(request.Skip, request.Count));
+            result.Idioms.AddRange(await _idioms.GetIdiomList(request.Skip, request.Count, int.Parse(context.GetHttpContext().User.Identity.Name)));
             return result;
         }
 

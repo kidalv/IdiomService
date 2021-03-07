@@ -10,6 +10,6 @@ namespace IdiomsService.Repositories
         Task<bool> ChangeIdiom(int idiomId, string text, string meaning, string usage, int languageId);
         Task<bool> DeleteIdiom(int idiomId);
         Task<GetIdiomInfoReply> GetIdiomInfo(int idiomId, int currentUserId);
-        Task<IEnumerable<IdiomReply>> GetIdiomList(int skip, int count);
+        Task<IEnumerable<IdiomReply>> GetIdiomList(int skip, int count, int currentUserId);
     }
 }

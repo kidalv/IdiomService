@@ -14,6 +14,7 @@ service User {
   rpc ChangeUser (ChangeUserRequest) returns (UserProfileReply);
   rpc AddUserLangueage (AddUserLanguageRequest) returns (UserProfileReply);
   rpc DeleteUserLanguage (DeleteUserLanguageRequest) returns (UserProfileReply);
+  rpc GoogleSignIn (GoogleSignInRequest) returns (UserCredentialsReply);
 }
 
 message GetUserProfileRequest {
@@ -40,6 +41,10 @@ message UserCredentialsReply {
   string refresh_token = 6;
   int32 role_id = 7;
   string image_url = 8;
+}
+
+message GoogleSignInRequest {
+  string jwt_token = 1;
 }
 
 message ChangeUserRequest {

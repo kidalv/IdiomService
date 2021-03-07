@@ -78,7 +78,7 @@ namespace IdiomsService.Security
                     var userCheck = await _db.Users.FirstOrDefaultAsync(x => x.Email == payload.Email && x.IsGoogle);
                     if (userCheck == null)
                     {
-                        return await RegisterUser(payload.Email, "", payload.Name, true);
+                        return await RegisterUser(payload.Email, "", payload.Name, true, payload.Picture);
                     }
                     else
                     {
@@ -138,7 +138,7 @@ namespace IdiomsService.Security
             }
         }
 
-        private async Task<UserCredentialsReply> RegisterUser(string email, string password, string name, bool isGoogle)
+        private async Task<UserCredentialsReply> RegisterUser(string email, string password, string name, bool isGoogle, string imageUrl = null)
         {
             var user = new Database.Models.User
             {
@@ -147,6 +147,7 @@ namespace IdiomsService.Security
                 Password = isGoogle ? "" : _hasher.Hash(password),
                 Registered = DateTime.UtcNow,
                 IsGoogle = isGoogle,
+                ImageUrl = imageUrl,
                 RoleId = (int)Roles.User
             };
 
