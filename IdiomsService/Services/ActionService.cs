@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
+using IdiomsService.Database;
 using IdiomsService.Database.Models;
 using IdiomsService.ExtensionMethods;
 using IdiomsService.Protos;
@@ -146,6 +147,13 @@ namespace IdiomsService.Services
             {
                 IsRemoved = true
             };
+        }
+
+        public override Task<GetLinkTypesReply> GetLinkTypes(GetLinkTypesRequest request, ServerCallContext context)
+        {
+            var response = new GetLinkTypesReply();
+            response.Links.AddRange(typeof(LinkTypes).GetEnumList<LinkReply, LinkTypes, Type>());
+            return Task.FromResult(response);
         }
     }
 }

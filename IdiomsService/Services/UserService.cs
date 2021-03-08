@@ -26,7 +26,7 @@ namespace IdiomsService.Services
 
         public override async Task<UserProfileReply> GetUserProfile(GetUserProfileRequest request, ServerCallContext context)
         {
-            if(request.UserId == 0 )
+            if(request.UserId == 0)
             {
                 return await _users.GetUserProfile(int.Parse(context.GetHttpContext().User.Identity.Name));
             }

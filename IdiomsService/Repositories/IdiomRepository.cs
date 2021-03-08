@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using IdiomsService.ExtensionMethods;
+using IdiomsService.Database.Models;
 
 namespace IdiomsService.Repositories
 {
@@ -45,6 +46,20 @@ namespace IdiomsService.Repositories
                                                   .Select(x => x.ToReply(currentUserId))
                                                   .AsNoTracking()
                                                   .ToListAsync());
+            result.Translations.AddRange(await _db.Links.Where(x => x.LinkTypeId == (int)LinkTypes.Translation && (x.RootId == idiomId || x.LinkId == idiomId))
+                .Select(x => new IdiomLinkReply
+                {
+                    IdiomId = x.RootId == idiomId ? x.RelatedId : x.RootId,
+                    Language = x.RootId == idiomId ? x.Related.Language.ToReply() : x.Root.Language.ToReply()
+                }).AsNoTracking()
+                .ToListAsync());
+            result.Similar.AddRange(await _db.Links.Where(x => x.LinkTypeId == (int)LinkTypes.Similar && (x.RootId == idiomId || x.LinkId == idiomId))
+                .Select(x => new IdiomLinkReply
+                {
+                    IdiomId = x.RootId == idiomId ? x.RelatedId : x.RootId,
+                    Language = x.RootId == idiomId ? x.Related.Language.ToReply() : x.Root.Language.ToReply()
+                }).AsNoTracking()
+                .ToListAsync());
             return result;
         }
 
@@ -107,6 +122,27 @@ namespace IdiomsService.Repositories
                 return true;
             }
             return false;
+        }
+
+        public async Task<IdiomLinkReply> AddIdiomLink(int currentIdiomId, int linkIdiomId, int linkTypeId, int currentUserId)
+        {
+            if (!await _db.Idioms.AnyAsync(x => x.IdiomId == currentIdiomId) ||
+                !await _db.Idioms.AnyAsync(x => x.IdiomId == linkIdiomId) ||
+                !System.Enum.IsDefined(typeof(LinkTypes), linkTypeId))
+            {
+                return null;
+            }
+
+            _db.Links.Add(new Link { RootId = currentIdiomId, RelatedId = linkIdiomId, LinkTypeId = linkTypeId });
+            await _db.SaveChangesAsync();
+            var language = await _db.Idioms.Where(x => x.IdiomId == linkIdiomId).Select(x => x.Language.ToReply()).AsNoTracking().FirstOrDefaultAsync();
+            return new IdiomLinkReply { IdiomId = linkIdiomId, Language = language };
+        }
+
+        public async Task AddLinksBatch(IEnumerable<Link> links)
+        {
+            _db.Links.AddRange(links);
+            await _db.SaveChangesAsync();
         }
     }
 }

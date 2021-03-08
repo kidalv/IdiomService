@@ -49,6 +49,11 @@ namespace IdiomsService.Services
             {
                 throw new RpcException(new Status(StatusCode.AlreadyExists, "Idiom with this text already exist"));
             }
+            var links = request.Links.Select(x => new Database.Models.Link { RootId = idiom.IdiomId, RelatedId = x.IdiomId, LinkTypeId = x.LinkTypeId });
+            if (links.Count() != 0)
+            {
+                await _idioms.AddLinksBatch(links);
+            }
             return await _idioms.GetIdiomInfo(idiom.IdiomId, int.Parse(context.GetHttpContext().User.Identity.Name));
         }
 
@@ -68,6 +73,16 @@ namespace IdiomsService.Services
                 throw new RpcException(new Status(StatusCode.NotFound, "Idiom was not found"));
             }
             return new DeleteIdiomReply { Result = "Idiom removed" };
+        }
+
+        public override async Task<IdiomLinkReply> Addlink(AddIdiomLinkRequest request, ServerCallContext context)
+        {
+            var result = await _idioms.AddIdiomLink(request.CurrentIdiomId, request.LinkIdiomId, request.LinkTypeId, int.Parse(context.GetHttpContext().User.Identity.Name));
+            if (result == null)
+            {
+                throw new RpcException(new Status(StatusCode.NotFound, "Idiom was not found"));
+            }
+            return result;
         }
     }
 }

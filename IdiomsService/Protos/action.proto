@@ -19,6 +19,19 @@ service Action {
   rpc GetAllLanguages (GetAllLanguagesRequest) returns (GetAllLanguagesResponse);
   rpc AddCommentLike (AddCommentLikeRequest) returns (AddCommentLikeResponse);
   rpc DeleteCommentLike (DeleteCommentLikeRequest) returns (DeleteCommentLikeResponse);
+  rpc GetLinkTypes (GetLinkTypesRequest) returns (GetLinkTypesReply);
+}
+
+message GetLinkTypesRequest {
+}
+
+message GetLinkTypesReply {
+  repeated LinkReply links = 1;
+}
+
+message LinkReply {
+  int32 link_type_id = 1;
+  string link_name = 2;
 }
 
 message AddUpvoteRequest {
