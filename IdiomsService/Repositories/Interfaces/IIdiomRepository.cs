@@ -14,5 +14,6 @@ namespace IdiomsService.Repositories
         Task<IEnumerable<IdiomReply>> GetIdiomList(int skip, int count, int currentUserId);
         Task<IdiomLinkReply> AddIdiomLink(int currentIdiom, int linkIdiom, int linkType, int currentUserId);
         Task AddLinksBatch(IEnumerable<Link> links);
+        Task<IEnumerable<IdiomReply>> FastSearch(string name);
     }
 }

@@ -14,6 +14,7 @@ service Idiom {
   rpc ChangeIdiom (ChangeIdiomRequest) returns (GetIdiomInfoReply);
   rpc DeleteIdiom (DeleteIdiomRequest) returns (DeleteIdiomReply);
   rpc Addlink (AddIdiomLinkRequest) returns (IdiomLinkReply);
+  rpc FastSearch (FastSearchRequest) returns (FastSearchReply);
 }
 
 message GetIdiomListRequest {
@@ -34,6 +35,14 @@ message AddIdiomRequest {
   string usage = 3;
   int32 language_id = 4;
   repeated IdiomLinkRequest links = 5;
+}
+
+message FastSearchRequest {
+  string idiom_name = 1;
+}
+
+message FastSearchReply {
+  repeated IdiomReply idioms = 1;
 }
 
 message IdiomLinkRequest {

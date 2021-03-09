@@ -65,7 +65,7 @@ namespace IdiomsService.Repositories
 
         public async Task<IEnumerable<IdiomReply>> GetIdiomList(int skip, int count, int currentUserId)
         {
-            var check = await _db.Idioms.Select(i => new IdiomReply
+            return await _db.Idioms.Select(i => new IdiomReply
             {
                 IdiomId = i.IdiomId,
                 DateAdded = Timestamp.FromDateTime(i.DateAdded.ToUniversalTime()),
@@ -77,7 +77,6 @@ namespace IdiomsService.Repositories
                 User = i.User.ToReply(),
                 IsFavorite = _db.Favorites.Any(x => x.IdiomId == i.IdiomId && x.UserId == currentUserId)
             }).Skip(skip).Take(count).AsNoTracking().ToListAsync();
-            return check;
         }
 
         public async Task<bool> AddIdiom(Database.Models.Idiom idiom)
@@ -143,6 +142,17 @@ namespace IdiomsService.Repositories
         {
             _db.Links.AddRange(links);
             await _db.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<IdiomReply>> FastSearch(string name)
+        {
+            var number = 3;
+            return await _db.Idioms.Where(x => EF.Functions.FuzzyStringMatchLevenshteinLessEqual(name.ToLower(), x.Text.ToLower(), number) <= number || x.Text.ToLower().Contains(name.ToLower())).Select(x => new IdiomReply
+            {
+                IdiomId = x.IdiomId,
+                Text = x.Text,
+                Language = x.Language.ToReply(),
+            }).Take(50).AsNoTracking().ToListAsync();
         }
     }
 }

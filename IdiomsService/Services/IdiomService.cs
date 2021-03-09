@@ -84,5 +84,12 @@ namespace IdiomsService.Services
             }
             return result;
         }
+
+        public override async Task<FastSearchReply> FastSearch(FastSearchRequest request, ServerCallContext context)
+        {
+            var result = new FastSearchReply();
+            result.Idioms.AddRange(await _idioms.FastSearch(request.IdiomName));
+            return result;
+        }
     }
 }
