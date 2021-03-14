@@ -47,13 +47,11 @@ message FastSearchReply {
 
 message IdiomLinkRequest {
   int32 idiom_id = 1;
-  int32 link_type_id = 2;
 }
 
 message AddIdiomLinkRequest {
   int32 current_idiom_id = 1;
   int32 link_idiom_id = 2;
-  int32 link_type_id = 3;
 }
 
 message ChangeIdiomRequest {

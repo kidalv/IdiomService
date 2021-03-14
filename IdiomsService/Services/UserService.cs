@@ -82,5 +82,10 @@ namespace IdiomsService.Services
             }
             return await _users.GetUserProfile(currentUserId);
         }
+
+        public override async Task<UserCredentialsReply> RefreshToken(RefreshTokenRequest request, ServerCallContext context)
+        {
+            return await _authorization.Refresh(request.Token);
+        }
     }
 }

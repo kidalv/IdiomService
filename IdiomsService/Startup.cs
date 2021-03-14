@@ -36,7 +36,7 @@ namespace IdiomsService
             RegisterServices(services);
 
             services.AddDbContextPool<Context>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), options => options.UseFuzzyStringMatch()));
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
