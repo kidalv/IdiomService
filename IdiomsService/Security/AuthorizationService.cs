@@ -52,7 +52,7 @@ namespace IdiomsService.Security
         public async Task<UserCredentialsReply> Refresh(string refreshToken)
         {
             var token = await _db.Tokens.FirstOrDefaultAsync(x => x.Token == refreshToken);
-            if (token == null || token.ExpiryDate > DateTime.UtcNow)
+            if (token == null || token.ExpiryDate < DateTime.UtcNow)
             {
                 return null;
             }

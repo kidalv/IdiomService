@@ -63,9 +63,53 @@ namespace IdiomsService.Repositories
             return result;
         }
 
-        public async Task<IEnumerable<IdiomReply>> GetIdiomList(int skip, int count, int currentUserId)
+        public async Task<IEnumerable<IdiomReply>> GetIdiomList(int skip, int count, int currentUserId, string search, string sort, IEnumerable<int> languages, bool isFavorites, bool translatedInAll)
         {
-            return await _db.Idioms.Select(i => new IdiomReply
+            var idioms = _db.Idioms.AsQueryable();
+
+            if (isFavorites)
+            {
+                idioms = idioms.Where(x => x.Favorites.Any(y => y.UserId == currentUserId));
+            }
+
+            if (languages.Any())
+            {
+                idioms = idioms.Where(x => languages.Contains(x.LanguageId));
+            }
+
+            if (translatedInAll && languages.Any())
+            {
+                idioms = idioms.Where(x => languages.All(y => x.LanguageId == y || x.Links.Any(z => z.RootId == y || z.RelatedId == y)));
+            }
+
+            if (search != null && search.Length > 0)
+            {
+                idioms = idioms.Where(x => x.Text.Contains(search));
+            }
+
+            if (sort != null && sort.Length > 0)
+            {
+                switch (sort)
+                {
+                    case "date" :
+                        idioms = idioms.OrderByDescending(x => x.DateAdded);
+                        break;
+                    case "comments" :
+                        idioms = idioms.OrderByDescending(x => x.Comment.Count);
+                        break;
+                    case "upvotes" :
+                        idioms = idioms.OrderByDescending(x => x.Upvotes.Where(y => y.IsUpvote).Count() - x.Upvotes.Where(y => !y.IsUpvote).Count());
+                        break;
+                    case "favorites" :
+                        idioms = idioms.OrderByDescending(x => x.Favorites.Count);
+                        break;
+                    case "languages" :
+                        idioms = idioms.OrderByDescending(x => x.Links.Count);
+                        break;
+                }
+            }
+
+            return await idioms.Select(i => new IdiomReply
             {
                 IdiomId = i.IdiomId,
                 DateAdded = Timestamp.FromDateTime(i.DateAdded.ToUniversalTime()),

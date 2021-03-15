@@ -23,6 +23,8 @@ message GetIdiomListRequest {
   string search = 3;
   repeated int32 language_ids = 4;
   string sort = 5;
+  bool favorites = 6;
+  bool translated_in_all_languages = 7;
 }
 
 message GetIdiomInfoRequest {
